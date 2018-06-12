@@ -1,0 +1,34 @@
+{
+  "name": "wpsmith/acf",
+  "description": "WordPress ACF Plugin.",
+  "keywords": [
+    "wordpress",
+    "acf",
+    "advanced custom fields",
+    "advanced custom fields pro"
+  ],
+  "homepage": "https://github.com/wpsmith/ACF",
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "Travis Smith",
+      "email": "t@wpsmith.net",
+      "homepage": "http://wpsmith.net/",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/wpsmith/ACF/issues"
+  },
+  "require": {
+    "php": ">=5.2.4",
+    "wpsmith/plugin": "^0.0.1",
+    "wpsmith/singleton": "0.0.1",
+    "wpsmith/user": "^0.0.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "WPS\\Plugins\\": "src/"
+    }
+  }
+}
