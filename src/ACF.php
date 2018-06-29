@@ -145,9 +145,9 @@ if ( ! class_exists( 'WPS\Plugins\ACF' ) ) {
 			}
 
 
-			// set global variable to avoid inifite loop.
+			// set global variable to avoid infinite loop.
 			// - could also remove_filter() then add_filter() again, but this is simpler.
-			$GLOBALS[ $global_name ] = 1;
+			$GLOBALS[ $global_name ] = 1; // Input var ok.
 
 
 			// loop over selected posts and add this $post_id.
@@ -215,8 +215,8 @@ if ( ! class_exists( 'WPS\Plugins\ACF' ) ) {
 
 			}
 
-			// reset global varibale to allow this filter to function as per normal.
-			$GLOBALS[ $global_name ] = 0;
+			// reset global variable to allow this filter to function as per normal.
+			$GLOBALS[ $global_name ] = 0; // Input var ok.
 
 
 			// return.
