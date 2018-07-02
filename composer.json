@@ -22,9 +22,9 @@
   },
   "require": {
     "php": ">=5.2.4",
-    "wpsmith/plugin": "^0.0.1",
-    "wpsmith/singleton": "0.0.1",
-    "wpsmith/user": "^0.0.1"
+    "wpsmith/plugin": "dev-master",
+    "wpsmith/singleton": "^0.0.1",
+    "wpsmith/user": "dev-master"
   },
   "autoload": {
     "psr-4": {
