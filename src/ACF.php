@@ -17,7 +17,7 @@
  * @since      0.1.0
  */
 
-namespace WPS\Plugins;
+namespace WPS\Plugins\ACF;
 
 use WPS\Core;
 
