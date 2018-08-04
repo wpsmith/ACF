@@ -116,7 +116,7 @@ if ( ! class_exists( 'WPS\Plugins\ACF' ) ) {
 		 */
 		public function add_bidirectional( $key ) {
 			if ( ! in_array( $key, $this->keys, true ) ) {
-				add_filter( "acf/update_value/name=$key", array( '\WPS\Plugins\ACF', 'bidirectional' ), 10, 3 );
+				add_filter( "acf/update_value/name=$key", array( '\WPS\Plugins\ACF\ACF', 'bidirectional' ), 10, 3 );
 				$this->keys[] = $key;
 			}
 		}
@@ -149,37 +149,29 @@ if ( ! class_exists( 'WPS\Plugins\ACF' ) ) {
 			// - could also remove_filter() then add_filter() again, but this is simpler.
 			$GLOBALS[ $global_name ] = 1; // Input var ok.
 
-
 			// loop over selected posts and add this $post_id.
 			foreach ( (array) $value as $post_id2 ) {
 
 				// load existing related posts.
 				$value2 = get_field( $field_name, $post_id2, false );
 
-
 				// allow for selected posts to not contain a value.
 				if ( empty( $value2 ) ) {
-
 					$value2 = array();
-
 				}
-
 
 				// bail early if the current $post_id is already found in selected post's $value2.
-				if ( in_array( $post_id, $value2, true ) ) {
+				if ( in_array( (string) $post_id, $value2, true ) ) {
 					continue;
 				}
-
 
 				// append the current $post_id to the selected post's 'related_posts' value.
 				$value2[] = $post_id;
 
-
 				// update the selected post's value (use field's key for performance).
-				update_field( $field_key, $value2, $post_id2 );
+				update_field( $field_key, array_unique( $value2 ), $post_id2 );
 
 			}
-
 
 			// find posts which have been removed.
 			$old_value = get_field( $field_name, $post_id, false );
@@ -191,10 +183,8 @@ if ( ! class_exists( 'WPS\Plugins\ACF' ) ) {
 					continue;
 				}
 
-
 				// load existing related posts.
 				$value2 = get_field( $field_name, $post_id2, false );
-
 
 				// bail early if no value.
 				if ( empty( $value2 ) ) {
@@ -204,7 +194,6 @@ if ( ! class_exists( 'WPS\Plugins\ACF' ) ) {
 
 				// find the position of $post_id within $value2 so we can remove it.
 				$pos = array_search( $post_id, $value2, true );
-
 
 				// remove.
 				unset( $value2[ $pos ] );
