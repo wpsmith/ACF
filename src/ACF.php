@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'WPS\Plugins\ACF' ) ) {
+if ( ! class_exists( 'WPS\Plugins\ACF\ACF' ) ) {
 	/**
 	 * Class ACF
 	 *
