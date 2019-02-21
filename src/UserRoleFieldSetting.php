@@ -1,6 +1,6 @@
 <?php
 
-namespace WPS\Plugins\ACF;
+namespace WPS\WP\Plugins\ACF;
 
 use WPS\Core;
 
@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'WPS\Plugins\ACF\UserRoleFieldSetting' ) ) {
+if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 	/**
 	 * Class UserRoleFieldSetting
 	 *

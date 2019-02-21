@@ -8,7 +8,7 @@
  * Any modifications to or software including (via compiler) GPL-licensed code must also be made
  * available under the GPL along with build & install instructions.
  *
- * @package    WPS\Core
+ * @package    WPS\WP\Plugins
  * @author     Travis Smith <t@wpsmith.net>
  * @copyright  2015-2018 Travis Smith
  * @license    http://opensource.org/licenses/gpl-2.0.php GNU Public License v2
@@ -17,7 +17,7 @@
  * @since      0.1.0
  */
 
-namespace WPS\Plugins\ACF;
+namespace WPS\WP\Plugins\ACF;
 
 use WPS\Core;
 
@@ -26,11 +26,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'WPS\Plugins\ACF\ACF' ) ) {
+if ( ! class_exists( __NAMESPACE__ . '\ACF' ) ) {
 	/**
 	 * Class ACF
 	 *
-	 * @package WPS\Plugins
+	 * @package WPS\WP\Plugins
 	 */
 	class ACF extends Core\Singleton {
 
