@@ -19,7 +19,8 @@
 
 namespace WPS\WP\Plugins\ACF;
 
-use WPS\Core;
+use WPS\Core\Singleton;
+use WPS\WP;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -32,19 +33,19 @@ if ( ! class_exists( __NAMESPACE__ . '\ACF' ) ) {
 	 *
 	 * @package WPS\WP\Plugins
 	 */
-	class ACF extends Core\Singleton {
+	class ACF extends Singleton {
 
 		/**
 		 * User.
 		 *
-		 * @var Core\User
+		 * @var WP\User
 		 */
 		public $user;
 
 		/**
 		 * Super User.
 		 *
-		 * @var Core\User[]
+		 * @var WP\User[]
 		 */
 		public $super_users;
 
@@ -81,7 +82,7 @@ if ( ! class_exists( __NAMESPACE__ . '\ACF' ) ) {
 			add_filter( 'remove_hube2_nag', '__return_true' );
 
 			add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
-			$this->user = new Core\User( $super_users );
+			$this->user = new WP\User( $super_users );
 		}
 
 		/**
