@@ -22,8 +22,8 @@
   },
   "require": {
     "php": ">=5.6.0",
+    "wpsmith/singleton": "dev-master",
     "wpsmith/plugin": "dev-master",
-    "wpsmith/singleton": "^1.0.0",
     "wpsmith/user": "dev-master"
   },
   "autoload": {
