@@ -20,7 +20,7 @@
 namespace WPS\WP\Plugins\ACF;
 
 use WPS\Core\Singleton;
-use WPS\WP;
+use WPS\WP\Users;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -38,23 +38,23 @@ if ( ! class_exists( __NAMESPACE__ . '\ACF' ) ) {
 		/**
 		 * User.
 		 *
-		 * @var WP\User
+		 * @var Users\CurrentUser
 		 */
-		public $user;
+		protected Users\CurrentUser $user;
 
 		/**
-		 * Super User.
+		 * Array of administrators/super users.
 		 *
-		 * @var WP\User[]
+		 * @var string[]
 		 */
-		public $super_users;
+		protected array $super_users;
 
 		/**
 		 * Field Key for bidirectional.
 		 *
 		 * @var array
 		 */
-		public $keys = array();
+		public array $keys = array();
 
 		/**
 		 * Ignored post types
@@ -78,21 +78,46 @@ if ( ! class_exists( __NAMESPACE__ . '\ACF' ) ) {
 		 */
 		public function __construct( $super_users = array() ) {
 
-			// No nagging!
-			add_filter( 'remove_hube2_nag', '__return_true' );
+			$this->super_users = $super_users;
+			\add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 
-			add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
-			$this->user = new WP\User( $super_users );
+		}
+
+		/**
+		 * Set super users.
+		 *
+		 * @param array $super_users Super Users.
+		 */
+		public function set_super_users( $super_users ) {
+			$this->super_users = $super_users;
+		}
+
+		/**
+		 * Gets the current user.
+		 *
+		 * @return Users\CurrentUser
+		 */
+		protected function get_current_user() {
+			if ( $this->user ) {
+				return $this->user;
+			}
+
+			if ( class_exists( 'WPS\WP\Users\CurrentUser' ) ) {
+				$this->user = Users\CurrentUser::get_instance( $this->super_users );
+			}
 		}
 
 		/**
 		 * ACF Customizations.
 		 */
 		public function plugins_loaded() {
-			$user = $this->user->user;
+			$user = $this->get_current_user();
+			if ( $user ) {
+				$user = $user->user;
+			}
 
-			// Special sauce for me!!
-			if ( 'wpsmith' === $user->user_login ) {
+			// Special sauce for super users!!
+			if ( in_array( $user->user_login, $this->super_users, true ) ) {
 				global $wp_post_types;
 				$post_types = array_keys( $wp_post_types );
 
@@ -100,11 +125,12 @@ if ( ! class_exists( __NAMESPACE__ . '\ACF' ) ) {
 					if ( in_array( $post_type, $this->ignored_post_types, true ) ) {
 						continue;
 					}
-					add_post_type_support( $post_type, 'custom-fields' );
+
+					\add_post_type_support( $post_type, 'custom-fields' );
 				}
 
-				add_filter( 'acf/settings/remove_wp_meta_box', '__return_false' );
-				add_filter( 'is_protected_meta', '__return_false', 999, 3 );
+				\add_filter( 'acf/settings/remove_wp_meta_box', '__return_false' );
+				\add_filter( 'is_protected_meta', '__return_false', 999, 3 );
 			}
 		}
 
@@ -117,7 +143,7 @@ if ( ! class_exists( __NAMESPACE__ . '\ACF' ) ) {
 		 */
 		public function add_bidirectional( $key ) {
 			if ( ! in_array( $key, $this->keys, true ) ) {
-				add_filter( "acf/update_value/name=$key", array( '\WPS\Plugins\ACF\ACF', 'bidirectional' ), 10, 3 );
+				\add_filter( "acf/update_value/name=$key", array( '\WPS\Plugins\ACF\ACF', 'bidirectional' ), 10, 3 );
 				$this->keys[] = $key;
 			}
 		}
@@ -154,7 +180,7 @@ if ( ! class_exists( __NAMESPACE__ . '\ACF' ) ) {
 			foreach ( (array) $value as $post_id2 ) {
 
 				// load existing related posts.
-				$value2 = get_field( $field_name, $post_id2, false );
+				$value2 = \get_field( $field_name, $post_id2, false );
 
 				// allow for selected posts to not contain a value.
 				if ( empty( $value2 ) ) {
@@ -170,12 +196,12 @@ if ( ! class_exists( __NAMESPACE__ . '\ACF' ) ) {
 				$value2[] = $post_id;
 
 				// update the selected post's value (use field's key for performance).
-				update_field( $field_key, array_unique( $value2 ), $post_id2 );
+				\update_field( $field_key, array_unique( $value2 ), $post_id2 );
 
 			}
 
 			// find posts which have been removed.
-			$old_value = get_field( $field_name, $post_id, false );
+			$old_value = \get_field( $field_name, $post_id, false );
 
 			foreach ( (array) $old_value as $post_id2 ) {
 
@@ -185,7 +211,7 @@ if ( ! class_exists( __NAMESPACE__ . '\ACF' ) ) {
 				}
 
 				// load existing related posts.
-				$value2 = get_field( $field_name, $post_id2, false );
+				$value2 = \get_field( $field_name, $post_id2, false );
 
 				// bail early if no value.
 				if ( empty( $value2 ) ) {
@@ -201,13 +227,12 @@ if ( ! class_exists( __NAMESPACE__ . '\ACF' ) ) {
 
 
 				// update the un-selected post's value (use field's key for performance).
-				update_field( $field_key, $value2, $post_id2 );
+				\update_field( $field_key, $value2, $post_id2 );
 
 			}
 
 			// reset global variable to allow this filter to function as per normal.
 			$GLOBALS[ $global_name ] = 0; // Input var ok.
-
 
 			// return.
 			return $value;
