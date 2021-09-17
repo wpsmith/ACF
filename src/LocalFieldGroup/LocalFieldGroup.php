@@ -8,27 +8,27 @@
  * Any modifications to or software including (via compiler) GPL-licensed code must also be made
  * available under the GPL along with build & install instructions.
  *
- * @package    WPS\WP\Plugins
+ * @package    WPS\WP\Plugins\ACF
  * @author     Travis Smith <t@wpsmith.net>
  * @copyright  2015-2021 Travis Smith
  * @license    http://opensource.org/licenses/gpl-2.0.php GNU Public License v2
  * @link       https://github.com/wpsmith/ACF
  */
 
-namespace WPS\WP\Plugins\ACF;
+namespace WPS\WP\Plugins\ACF\LocalFieldGroup;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( __NAMESPACE__ . '\ACFLocalFieldGroup' ) ) {
+if ( ! class_exists( __NAMESPACE__ . '\LocalFieldGroup' ) ) {
 	/**
 	 * Class ACFLocalFieldGroup
 	 *
 	 * @package WPS\WP\Plugins\ACF
 	 */
-	class ACFLocalFieldGroup {
+	class LocalFieldGroup {
 		/**
 		 * The default ACF save_json path.
 		 *
