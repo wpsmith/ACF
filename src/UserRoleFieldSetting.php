@@ -2,7 +2,7 @@
 
 namespace WPS\WP\Plugins\ACF;
 
-use WPS\Core;
+use WPS\Core\Singleton;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,7 +15,7 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 	 *
 	 * @package WPS\Plugins\ACF
 	 */
-	class UserRoleFieldSetting extends Core\Singleton {
+	class UserRoleFieldSetting extends Singleton {
 
 		/**
 		 * Choices.
@@ -52,10 +52,10 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 		 * UserRoleFieldSetting constructor.
 		 */
 		protected function __construct() {
-			add_action( 'init', array( $this, 'init' ), 1 );
-			add_action( 'acf/init', array( $this, 'add_actions' ) );
-			add_action( 'acf/save_post', array( $this, 'save_post' ), - 1 );
-			add_action( 'after_setup_theme', array( $this, 'after_setup_theme' ) );
+			\add_action( 'init', array( $this, 'init' ), 1 );
+			\add_action( 'acf/init', array( $this, 'add_actions' ) );
+			\add_action( 'acf/save_post', array( $this, 'save_post' ), - 1 );
+			\add_action( 'after_setup_theme', array( $this, 'after_setup_theme' ) );
 			//add_filter('acf/get_field_types', array($this, 'add_actions'), 20, 1);
 		}
 
@@ -71,10 +71,10 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 			}
 			$acf_version = acf_get_setting( 'version' );
 			if ( version_compare( $acf_version, '5.5.0', '>=' ) ) {
-				add_filter( 'acf/prepare_field', array( $this, 'prepare_field' ), 99 );
+				\add_filter( 'acf/prepare_field', array( $this, 'prepare_field' ), 99 );
 			} else {
 				// if < 5.5.0 user the acf/get_fields hook to remove fields
-				add_filter( 'acf/get_fields', array( $this, 'get_fields' ), 20, 2 );
+				\add_filter( 'acf/get_fields', array( $this, 'get_fields' ), 20, 2 );
 			}
 		}
 
@@ -89,7 +89,7 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 		 * @return array|false
 		 */
 		public function prepare_field( $field ) {
-			$exclude = apply_filters( 'acf/user_role_setting/exclude_field_types', $this->exclude_field_types );
+			$exclude = \apply_filters( 'acf/user_role_setting/exclude_field_types', $this->exclude_field_types );
 
 			if ( in_array( $field['type'], $exclude, true ) ) {
 				return $field;
@@ -102,10 +102,10 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 							return $field;
 						}
 					}
-				} else {
-					// no user roles have been selected for this field
-					// it will never be displayed, this is probably an error
 				}
+
+                // no user roles have been selected for this field
+                // it will never be displayed, this is probably an error
 			} else {
 				// user roles not set for this field
 				// this field was created before this plugin was in use
@@ -138,7 +138,7 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 			}
 
 			// Capture excluded field types
-			$this->exclude_field_types = apply_filters( 'acf/user_role_setting/exclude_field_types', $this->exclude_field_types );
+			$this->exclude_field_types = \apply_filters( 'acf/user_role_setting/exclude_field_types', $this->exclude_field_types );
 
 			// Filter out "uneditable fields".
 			if ( is_array( $_POST['acf'] ) ) {
@@ -159,7 +159,7 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 		 */
 		private function get_removed( $post_id ) {
 			foreach ( $_POST['acf_removed'] as $field_key => $value ) {
-				$_POST['acf_removed'][ $field_key ] = get_field( $field_key, $post_id, false );
+				$_POST['acf_removed'][ $field_key ] = \get_field( $field_key, $post_id, false );
 			}
 		}
 
@@ -207,7 +207,7 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 				// Only check ACF fields.
 				if ( 'field_' === substr( $index, 0, 6 ) ) {
 
-					$field = get_field_object( $index );
+					$field = \get_field_object( $index );
 
 					// If excluded, then keep.
 					if ( in_array( $field['type'], $this->exclude_field_types, true ) ) {
@@ -257,20 +257,20 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 			}
 
 			// Get our exclusions.
-			$exclude = apply_filters( 'acf/user_role_setting/exclude_field_types', $this->exclude_field_types );
+			$exclude = \apply_filters( 'acf/user_role_setting/exclude_field_types', $this->exclude_field_types );
 
 			// Get ACF version.
-			$acf_version = acf_get_setting( 'version' );
+			$acf_version = \acf_get_setting( 'version' );
 
-			// Get the sctions.
-			$sections = acf_get_field_types();
+			// Get the sections.
+			$sections = \acf_get_field_types();
 
 			// ACF version < 5.5.0 or >= 5.6.0
 			if ( version_compare( $acf_version, '5.5.0', '<' ) || version_compare( $acf_version, '5.6.0', '>=' ) ) {
 				foreach ( (array) $sections as $section ) {
 					foreach ( (array) $section as $type => $label ) {
 						if ( ! isset( $exclude[ $type ] ) ) {
-							add_action( 'acf/render_field_settings/type=' . $type, array(
+							\add_action( 'acf/render_field_settings/type=' . $type, array(
 								$this,
 								'render_field_settings'
 							), 1 );
@@ -281,7 +281,7 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 				// ACF Version >= 5.5.0 || < 5.6.0
 				foreach ( (array) $sections as $type => $settings ) {
 					if ( ! isset( $exclude[ $type ] ) ) {
-						add_action( 'acf/render_field_settings/type=' . $type, array(
+						\add_action( 'acf/render_field_settings/type=' . $type, array(
 							$this,
 							'render_field_settings'
 						), 1 );
@@ -298,7 +298,7 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 			if ( is_object( $current_user ) && isset( $current_user->roles ) ) {
 				$this->current_user = $current_user->roles;
 			}
-			if ( is_multisite() && current_user_can( 'update_core' ) ) {
+			if ( \is_multisite() && \current_user_can( 'update_core' ) ) {
 				$this->current_user[] = 'super_admin';
 			}
 		}
@@ -315,9 +315,9 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 				return $this->choices;
 			}
 
-			$wp_roles = wp_roles();
+			$wp_roles = \wp_roles();
 			$choices  = array( 'all' => __( 'All', 'wps' ) );
-			if ( is_multisite() ) {
+			if ( \is_multisite() ) {
 				$choices['super_admin'] = __( 'Super Admin', 'wps' );
 			}
 
@@ -343,8 +343,8 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 //				is_object( get_post() ) &&
 //				get_the_ID() &&
 //				(
-				'acf-field-group' === get_post_type() ||
-				'acf-field' === get_post_type()
+				'acf-field-group' === \get_post_type() ||
+				'acf-field' === \get_post_type()
 //				)
 			) {
 
@@ -352,7 +352,7 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 			}
 
 			// Get excluded fields.
-			$this->exclude_field_types = apply_filters( 'acf/user_role_setting/exclude_field_types', $this->exclude_field_types );
+			$this->exclude_field_types = \apply_filters( 'acf/user_role_setting/exclude_field_types', $this->exclude_field_types );
 
 			// Check the fields.
 			$fields = $this->check_fields( $fields );
@@ -423,9 +423,9 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 		public function render_field_settings( $field ) {
 			$args = array(
 				'type'          => 'checkbox',
-				'label'         => __( 'User Roles', 'wps' ),
+				'label'         => \__( 'User Roles', 'wps' ),
 				'name'          => 'user_roles',
-				'instructions'  => __( 'Select the User Roles that are allowed to view and edit this field.' .
+				'instructions'  => \__( 'Select the User Roles that are allowed to view and edit this field.' .
 				                       ' This field will be removed for any user type not selected.' .
 				                       ' <strong><em>If nothing is selected then this field will never be' .
 				                       ' included in the field group.</em></strong>', 'wps' ),
@@ -434,7 +434,7 @@ if ( ! class_exists( __NAMESPACE__ . '\UserRoleFieldSetting' ) ) {
 				'choices'       => $this->choices,
 				'layout'        => 'horizontal'
 			);
-			acf_render_field_setting( $field, $args, false );
+			\acf_render_field_setting( $field, $args, false );
 
 		}
 	}
