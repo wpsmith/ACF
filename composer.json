@@ -9,6 +9,7 @@
   ],
   "homepage": "https://github.com/wpsmith/ACF",
   "license": "GPL-2.0+",
+  "type": "library",
   "authors": [
     {
       "name": "Travis Smith",
