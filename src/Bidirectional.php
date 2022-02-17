@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( __NAMESPACE__ . '\ACF' ) ) {
+if ( ! class_exists( __NAMESPACE__ . '\Bidirectional' ) ) {
 	/**
 	 * Class ACF
 	 *
@@ -50,7 +50,7 @@ if ( ! class_exists( __NAMESPACE__ . '\ACF' ) ) {
 		 */
 		public function add_bidirectional( $key ) {
 			if ( ! in_array( $key, $this->keys, true ) ) {
-				\add_filter( "acf/update_value/name=$key", array( '\WPS\Plugins\ACF\ACF', 'bidirectional' ), 10, 3 );
+				\add_filter( "acf/update_value/name=$key", array( __NAMESPACE__ . '\Bidirectional', 'bidirectional' ), 10, 3 );
 				$this->keys[] = $key;
 			}
 		}
