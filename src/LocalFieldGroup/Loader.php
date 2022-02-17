@@ -13,15 +13,14 @@
  * @author     Travis Smith <t@wpsmith.net>
  * @copyright  2015-2021 Travis Smith
  * @license    http://opensource.org/licenses/gpl-2.0.php GNU Public License v2
- * @link       https://github.com/wpsmith/WPS
+ * @link       https://wpsmith.net
  * @version    1.0.0
  * @since      0.1.0
  */
 
-namespace WPS\WP\Plugins\ACF\FieldGroups;
+namespace WPS\WP\Plugins\ACF\LocalFieldGroup;
 
 use WPS\Core\Singleton;
-use WPS\WP\Plugins\ACF\LocalFieldGroup\LocalFieldGroup;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -34,7 +33,7 @@ if ( ! class_exists( __NAMESPACE__ . '\Loader' ) ) {
 	 *
 	 * @package WPS\WP\Plugins\ACF
 	 */
-	class Loader extends Singleton {
+	class Loader {
 		/**
 		 * Plugin file path.
 		 *
@@ -52,14 +51,35 @@ if ( ! class_exists( __NAMESPACE__ . '\Loader' ) ) {
 		/**
 		 * ACF constructor.
 		 *
-		 * @param null $args
+		 * @param string $file The __FILE__ of the plugin.
 		 */
-		protected function __construct( $args = null ) {
-			parent::__construct( $args );
-
-			// Load our ACF Fields.
+		public function __construct( string $file = __FILE__ ) {
+			$this->file = $file;
+			$this->auto_add();
 			\add_filter( 'acf/settings/load_json', [ $this, 'load_json' ] );
+		}
 
+		/**
+		 * Automatically adds all files in a specific directory.
+		 */
+		public function auto_add() {
+			$files = array_diff( scandir( $this->get_acf_json_path() ), array( '.', '..', 'index.php', ) );
+			foreach ( $files as $file ) {
+				if ( strlen( $file ) > 6 && false !== strpos( $file, '.json', -5 ) ) {
+					$this->add_group( $file );
+				}
+			}
+		}
+
+		/**
+		 * Adds a group.
+		 *
+		 * @param string $group ACF group ID.
+		 */
+		public function add_group( $group ) {
+			if ( ! in_array( $group, $this->field_groups ) ) {
+				$this->field_groups[] = $group;
+			}
 		}
 
 		/**
@@ -68,7 +88,7 @@ if ( ! class_exists( __NAMESPACE__ . '\Loader' ) ) {
 		public function load() {
 			// Instantiate our groups.
 			if ( ! empty( $this->field_groups ) ) {
-				foreach( $this->field_groups as $field_group ) {
+				foreach ( $this->field_groups as $field_group ) {
 					new LocalFieldGroup( $field_group, $this->get_acf_json_path() );
 				}
 			}
@@ -93,7 +113,7 @@ if ( ! class_exists( __NAMESPACE__ . '\Loader' ) ) {
 		 * @return string
 		 */
 		public function get_acf_json_path() {
-			return plugin_dir_path( $this->file ) . '/acf-json';
+			return plugin_dir_path( $this->file ) . 'acf-json';
 		}
 	}
 }

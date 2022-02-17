@@ -67,6 +67,9 @@ if ( ! class_exists( __NAMESPACE__ . '\LocalFieldGroup' ) ) {
 			$this->default_save_json_path = \acf_get_setting( 'save_json' );
 
 			if ( \acf_get_instance( 'ACF_Local_JSON' )->is_enabled() ) {
+				if ( false !== strpos( $field_group_id, '.json' ) ) {
+					$field_group_id = substr( $field_group_id, 0, -5 );
+				}
 				$this->field_group_id    = $field_group_id;
 				$this->new_save_location = $new_save_location;
 				\add_filter( 'acf/update_field_group', [ $this, 'maybe_change_save_json' ], 1 );
@@ -86,6 +89,7 @@ if ( ! class_exists( __NAMESPACE__ . '\LocalFieldGroup' ) ) {
 				return $field_group;
 			}
 
+			global $wp_filter;
 			$this->field_group = $field_group;
 			\add_filter( 'acf/settings/save_json', [ $this, 'save_json' ], 1 );
 
